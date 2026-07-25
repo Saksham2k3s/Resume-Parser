@@ -1,5 +1,5 @@
-import pdfParse from "pdf-parse";
-import cloudinary from "../config/cloudinary.js";
+import { PDFParse } from "pdf-parse";
+import supabase from "../config/supabase.js";
 import Resume from "../models/Resume.js";
 import { parseResumeText } from "../utils/parser.js";
 
@@ -11,31 +11,34 @@ export async function uploadResume(req, res) {
     }
 
     // extract raw text from the pdf buffer (in memory, no disk write)
-    const pdfData = await pdfParse(req.file.buffer);
+    const parser = new PDFParse({ data: req.file.buffer });
+    const pdfData = await parser.getText();
     const rawText = pdfData.text;
+    await parser.destroy(); // cleanup, per pdf-parse v2 docs
 
     if (!rawText || rawText.trim().length === 0) {
       return res.status(400).json({ error: "Could not extract text from PDF - it may be scanned/image-based" });
     }
 
-    // upload the actual pdf file to cloudinary
-    const uploadResult = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { resource_type: "raw", folder: "resumes" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
+    // upload the actual pdf file to supabase storage
+    const fileName = `${Date.now()}-${req.file.originalname}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("resumes")
+      .upload(fileName, req.file.buffer, {
+        contentType: "application/pdf",
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = supabase.storage.from("resumes").getPublicUrl(fileName);
+    const fileUrl = urlData.publicUrl;
 
     // run our regex-based parser on the extracted text
     const parsedFields = parseResumeText(rawText);
 
     const resume = await Resume.create({
       fileName: req.file.originalname,
-      fileUrl: uploadResult.secure_url,
+      fileUrl: fileUrl,
       rawText,
       ...parsedFields,
     });
