@@ -129,21 +129,26 @@ export function extractCertifications(sections) {
   return splitIntoEntries(sections.certifications);
 }
 
-// tries to guess college name from education section - looks for common patterns
 export function extractCollege(sections) {
   const eduText = sections.education || "";
-  const collegeMatch = eduText.match(
-    /(university|college|institute|iit|nit|polytechnic)[^\n,]*/i
-  );
-  return collegeMatch ? collegeMatch[0].trim() : "";
+  // match the whole line containing a college keyword, not just from the keyword onward
+  const lines = eduText.split("\n");
+  for (const line of lines) {
+    if (/university|college|institute|iit|nit|polytechnic/i.test(line)) {
+      return line.trim();
+    }
+  }
+  return "";
 }
 
 export function extractDegree(sections) {
   const eduText = sections.education || "";
   const degreeMatch = eduText.match(
-    /(b\.?tech|m\.?tech|bachelor|master|bca|mca|b\.?e\.?|m\.?e\.?|bsc|msc|phd)[^\n,]*/i
+    /(b\.?\s?tech|m\.?\s?tech|bachelor of [a-z\s]+|master of [a-z\s]+|bca|mca|b\.?e\.?|m\.?e\.?|bsc|msc|phd)/i
   );
-  return degreeMatch ? degreeMatch[0].trim() : "";
+  if (!degreeMatch) return "";
+  // strip any trailing date range that might still be attached (e.g. "Aug 2025 – June 2027")
+  return degreeMatch[0].replace(/\s*(19|20)\d{2}.*$/, "").trim();
 }
 
 export function extractGraduationYear(sections) {
