@@ -7,8 +7,8 @@ used for parsing, per the assignment's explicit requirement.
 
 Built for the Mindstack SDE-1 assignment.
 
-**Live app:** [add your deployed frontend URL here]
-**Backend API:** [add your deployed backend URL here]
+**Live app:** https://resume-parser-nine-beta.vercel.app/
+**Backend API:** https://resume-parser-backend-opmy.onrender.com/
 
 ---
 
