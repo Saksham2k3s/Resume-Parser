@@ -3,7 +3,7 @@ import supabase from "../config/supabase.js";
 import Resume from "../models/Resume.js";
 import { parseResumeText } from "../utils/parser.js";
 
-// uploads pdf to cloudinary, extracts text, parses fields, saves everything
+// uploads pdf to supabase, extracts text, parses fields, saves everything
 export async function uploadResume(req, res) {
   try {
     if (!req.file) {
@@ -101,7 +101,7 @@ export async function getResumeById(req, res) {
   }
 }
 
-// bonus - delete a resume
+// delete a resume
 export async function deleteResume(req, res) {
   try {
     const resume = await Resume.findByIdAndDelete(req.params.id);

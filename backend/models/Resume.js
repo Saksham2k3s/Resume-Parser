@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const resumeSchema = new mongoose.Schema({
   fileName: { type: String, required: true },
-  fileUrl: { type: String, required: true }, // cloudinary url
+  fileUrl: { type: String, required: true },
   uploadedAt: { type: Date, default: Date.now },
 
   rawText: { type: String }, // full extracted text, useful for debugging/re-parsing

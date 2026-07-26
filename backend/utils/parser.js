@@ -1,12 +1,11 @@
 // pulls structured fields out of raw resume text using regex + keyword matching
-// no LLM/AI here on purpose - assignment explicitly requires traditional parsing
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 const PHONE_REGEX = /(\+?\d{1,3}[-.\s]?)?\(?\d{3,5}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g;
 const LINKEDIN_REGEX = /(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-_/]+/gi;
 const GITHUB_REGEX = /(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9-_/]+/gi;
 
-// common skills list to match against - not exhaustive but covers most tech resumes
+// common skills list to match against
 const SKILL_KEYWORDS = [
   "javascript", "typescript", "python", "java", "c++", "c#", "go", "golang", "rust",
   "react", "react.js", "next.js", "vue", "vue.js", "angular", "redux", "tailwind",
@@ -18,7 +17,7 @@ const SKILL_KEYWORDS = [
   "jira", "agile", "scrum", "figma",
 ];
 
-// section headers we look for to split the resume into chunks
+// section headers to split the resume into chunks
 const SECTION_HEADERS = {
   education: /education/i,
   experience: /experience|employment|work history/i,
